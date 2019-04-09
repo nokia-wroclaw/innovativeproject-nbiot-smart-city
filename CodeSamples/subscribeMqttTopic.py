@@ -6,7 +6,7 @@
 import paho.mqtt.client as mqtt
 import credentials as cred
 
-tokenID         = 0
+tokenID         = 1
 specificTopic   = cred.mqtt['token'][tokenID] + "/urn:sku:meter-001/temperature/0/sensorValue"
 generalTopic    = cred.mqtt['token'][tokenID] + "/#"
 
