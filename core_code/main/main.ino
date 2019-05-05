@@ -4,11 +4,11 @@
 #include <WiFi101.h>
 #include <PubSubClient.h>
 
-#include "arduino_secrets.h" 
+#include "arduino_secrets.h"
 
 
 OneWire  ds(10);  // on pin 10 (a 4.7K resistor is necessary)
-
+float celsius;
 float temperature()
 {
   byte i;
@@ -16,19 +16,19 @@ float temperature()
   byte type_s;
   byte data[12];
   byte addr[8];
-  float celsius;
-  
+
+
   if ( !ds.search(addr)) {
     Serial.println("No more addresses.");
     Serial.println();
     ds.reset_search();
     delay(250);
-    return 0;
+    //    return celsius;
   }
 
   if (OneWire::crc8(addr, 7) != addr[7]) {
-      Serial.println("CRC is not valid!");
-      return 0;
+    Serial.println("CRC is not valid!");
+    return celsius;
   }
   Serial.println();
 
@@ -37,12 +37,12 @@ float temperature()
   ds.reset();
   ds.select(addr);
   ds.write(0x44, 1);        // start conversion, with parasite power on at the end
-  
+
   delay(1000);     // maybe 750ms is enough, maybe not
   // we might do a ds.depower() here, but the reset will take care of it.
-  
+
   present = ds.reset();
-  ds.select(addr);    
+  ds.select(addr);
   ds.write(0xBE);         // Read Scratchpad
 
   Serial.print("  Data = ");
@@ -81,6 +81,7 @@ float temperature()
   Serial.print(celsius);
   Serial.print(" Celsius, ");
   Serial.println();
+  ds.reset_search();
   return celsius;
 }
 
@@ -98,7 +99,7 @@ WiFiClient wificlient;
 PubSubClient client(wificlient);
 
 void setup() {
-  client.setServer("impact.idc.nokia.com", 31883);
+  client.setServer(SERVER_URL, PORT);
   client.setCallback(callback);
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
@@ -132,23 +133,65 @@ void setup() {
 }
 
 void loop() {
-  int temp =  temperature();
-  if(temp - val > 10 || val - temp > 10)
-  {
-    val = temp;
-    Serial.println(val);
-    char cstr[16];
-    itoa(val, cstr, 10);
-    if(client.connect(TOKEN, USER, PASSWORD))
-    {
-      client.publish(TOPIC ,cstr);
-    }
-    else
-    {
-      reconnect();
-    }
-  }
+  float temp =  temperature();
+  temperatureUpdate(temp);
+  float ph = analogRead(A0);
+  Serial.print("\tph: ");
+  Serial.print(ph);
+  Serial.println();
+  PhUpdate(ph);
 
+  int ppm = analogRead(A1);
+  Serial.print("\tppm: ");
+  Serial.print(ppm);
+  Serial.println();
+  PpmUpdate(ppm);
+  delay(10000);
+
+}
+
+void PpmUpdate(int ppm)
+{
+  char cstr[8];
+  itoa(ppm, cstr, 10);
+//    sprintf(cstr, "%.2f", ppm);
+  if (client.connect(TOKEN, USER, PASSWORD)) //update temperatury
+  {
+    client.publish(TOPIC_PPM , cstr);
+  }
+  else
+  {
+    reconnect();
+  }
+  
+}
+void PhUpdate(float mV)
+{
+  char cstr[8];
+//  itoa(mV, cstr, 10);
+    sprintf(cstr, "%.2f", mV);
+  if (client.connect(TOKEN, USER, PASSWORD)) //update temperatury
+  {
+    client.publish(TOPIC_PH , cstr);
+  }
+  else
+  {
+    reconnect();
+  }
+}
+
+void temperatureUpdate(float temp)
+{
+  char cstr[8];
+  sprintf(cstr, "%.2f", temp);
+  if (client.connect(TOKEN, USER, PASSWORD)) //update temperatury
+  {
+    client.publish(TOPIC_TEMP , cstr);
+  }
+  else
+  {
+    reconnect();
+  }
 }
 
 void printWiFiData() {
