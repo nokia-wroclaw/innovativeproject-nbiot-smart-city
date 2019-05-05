@@ -23,12 +23,12 @@ float temperature()
     Serial.println();
     ds.reset_search();
     delay(250);
-    return;
+    return 0;
   }
 
   if (OneWire::crc8(addr, 7) != addr[7]) {
       Serial.println("CRC is not valid!");
-      return;
+      return 0;
   }
   Serial.println();
 
@@ -81,7 +81,7 @@ float temperature()
   Serial.print(celsius);
   Serial.print(" Celsius, ");
   Serial.println();
-  return celcius;
+  return celsius;
 }
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
