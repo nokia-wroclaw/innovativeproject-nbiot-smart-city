@@ -103,9 +103,9 @@ void setup() {
   client.setCallback(callback);
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+//  while (!Serial) {
+//    ; // wait for serial port to connect. Needed for native USB port only
+//  }
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -146,10 +146,34 @@ void loop() {
   Serial.print(ppm);
   Serial.println();
   PpmUpdate(ppm);
+
+  int czyst = analogRead(A2);
+  float fczyst = czyst * (5.0 / 1024.0);
+    Serial.print("\tczyst: ");
+  Serial.print(fczyst);
+  Serial.println();
+  CzystUpdate(fczyst);
+  
   delay(10000);
 
 }
 
+void CzystUpdate(float fczyst)
+{
+  char cstr[8];
+  
+//  itoa(czyst, cstr, 10);
+    sprintf(cstr, "%.2f", fczyst);
+  if (client.connect(TOKEN, USER, PASSWORD)) //update temperatury
+  {
+    client.publish(TOPIC_CZYST , cstr);
+  }
+  else
+  {
+    reconnect();
+  }
+  
+}
 void PpmUpdate(int ppm)
 {
   char cstr[8];
