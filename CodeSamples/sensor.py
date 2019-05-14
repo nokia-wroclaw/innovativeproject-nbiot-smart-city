@@ -4,6 +4,18 @@ sensors = [
     { 
         "name": "temperature",
         "value": 0.0 
+    },
+    {
+        "name": "ph",
+        "value": 0.0
+    },
+    {
+        "name": "ppm",
+        "value": 0
+    },
+    {
+        "name": "czyst",
+        "value": 0
     }
 ]
 
