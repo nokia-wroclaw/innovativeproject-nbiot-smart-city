@@ -7,7 +7,8 @@ import credentials as cred
 
 tokenID = 0
 sleep_time = int(sys.argv[2])
-metrics = ["temperature", "ph", "ppm", "czyst"]
+name = ["temperature", "ph", "ppm", "czyst"]
+rand_range = [100.0, 14.0, 1000, 5.0]
 
 
 class myThread (threading.Thread):
@@ -29,9 +30,11 @@ def thread_function(mock_id):
     while True:
         time.sleep(sleep_time-1)
         client.connect(cred.impact['url'], cred.impact['port'], 60)
-        for m in metrics:
-            rand_payload = random.randint(0, 512)
-            topic_full = topic_base + m + "/0/sensorValue"
+        for n, r in zip(name, rand_range):
+            rand_payload = round(random.uniform(0.0, r), 2)
+            if n == 'ppm':
+                rand_payload = int(rand_payload)
+            topic_full = topic_base + n + "/0/sensorValue"
             client.publish(topic_full, payload=rand_payload, qos=0, retain=False)
             print(topic_full + " | payl: " + str(rand_payload))
         time.sleep(1)
