@@ -11,12 +11,11 @@ from flask_restful import Api, Resource, reqparse
 import sensor
 from threading import Thread
 
-
 def rest():
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(sensor.Sensor, "/sensor/<string:name>")
-    app.run(debug=True)
+    api.add_resource(sensor.Sensor, "/sensor/<int:name>")
+    app.run(debug=False)
 
 def mqtt_fun():
     tokenID         = 0
@@ -33,13 +32,11 @@ def mqtt_fun():
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(client, userdata, msg):
-        print(msg.topic+" "+str(msg.payload))
         split = msg.topic.split("/")
         name = split[2]
-        for sens in sensor.sensors:
-            if sens["name"] == name:
-                sens["value"] = re.findall("\d+\.\d+", str(msg.payload))[0]
-                print(sens["name"], sens["value"])
+        thing_id = re.findall("\d+", str(split[1]))[0]
+        value = str(msg.payload)
+        sensor.update(thing_id, name, value)
                 
     client = mqtt.Client()
     client.on_connect = on_connect
