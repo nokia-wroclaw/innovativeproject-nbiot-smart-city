@@ -13,7 +13,8 @@ def update(thing_id, name, value):
         if len(sensors) > 0:
             for thing in sensors:
                     if thing["id"] == int(thing_id):
-                        thing[name] = value
+                        # thing[name] = value
+                        thing[name] = float(value.split("'")[1])
                         rv = True
                         break
             if not rv:
@@ -32,7 +33,7 @@ def create(thing_id, name, value):
         "czyst": 0.0
     }
     thing["id"] = int(thing_id)
-    thing[name] = value
+    thing[name] = float(value.split("'")[1])
     sensors.append(thing)
     print("create sensor id:", thing["id"])
 
