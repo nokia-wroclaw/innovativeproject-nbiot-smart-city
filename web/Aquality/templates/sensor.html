@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sensor nr {{sensor.id}}</title>
+    <style>
+
+        th{
+            padding: 10px;
+        }
+        .block{
+            width: 150px;
+            height: 150px;
+            border-style: ridge;
+            border-radius: 40px;
+            border-color: black;
+            margin: 0 auto;
+            vertical-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color:aqua;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <center>
+    <table>
+        <tr>
+            <th><div class="block">{{sensor.temperature}}</div></th> <th><div class="block">{{sensor.ph}}</div></th>
+        </tr>
+        <tr>
+            <th><div class="block">{{sensor.ppm}}</div></th> <th><div class="block">{{sensor.czyst}}</div></th>
+        </tr>
+    </table>
+    </center>
+</body>
+</html>
