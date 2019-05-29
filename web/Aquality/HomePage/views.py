@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .forms import SensorForm
+from .forms import SensorForm, get_ids
 import requests
 
 sensor_id = -1
@@ -13,6 +13,7 @@ def index(request):
             return sensor(request, sensor_id)
 
     form = SensorForm()
+    get_ids()
     return render(request, 'form.html', {'form' : form})
 
 def sensor(request, sensor_id):

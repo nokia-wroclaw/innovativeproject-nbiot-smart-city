@@ -28,7 +28,7 @@ def update(thing_id, name, value, IDS):
 
 def create(thing_id, name, value, IDS):
     IDS.append(int(thing_id))
-    IDS = list(set(IDS))
+    IDS = list(set(IDS)).sort()
     thing = {
         "id" : -1,
         "temperature" : 0.0,
