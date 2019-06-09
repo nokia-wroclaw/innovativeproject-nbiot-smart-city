@@ -1,3 +1,4 @@
 /CodeSamples/credentials.py
 core_code/arduino_secrets.h
 core_code/main/arduino_secrets.h
+multiple_devices_mocker/credentials.py

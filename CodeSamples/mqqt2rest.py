@@ -1,8 +1,3 @@
-# Example for an MQTT topic subscription in Nokia IMPACT IoT using paho.mqtt.client
-# based on an example from https://pypi.org/project/paho-mqtt/#usage-and-api
-#
-# Note: credentials.py are not shared on github and are in .gitignore
-
 import paho.mqtt.client as mqtt
 import credentials as cred
 import re
@@ -15,7 +10,8 @@ def rest():
     app = Flask(__name__)
     api = Api(app)
     api.add_resource(sensor.Sensor, "/sensor/<int:name>")
-    app.run(debug=False)
+    api.add_resource(sensor.Ids, "/ids")
+    app.run(debug=True)
 
 def mqtt_fun():
     tokenID         = 0
@@ -36,7 +32,7 @@ def mqtt_fun():
         name = split[2]
         thing_id = re.findall("\d+", str(split[1]))[0]
         value = str(msg.payload)
-        sensor.update(thing_id, name, value)
+        sensor.update(thing_id, name, value, sensor.IDS)
                 
     client = mqtt.Client()
     client.on_connect = on_connect
@@ -50,8 +46,3 @@ def mqtt_fun():
 tr = Thread(target=mqtt_fun, args=())
 tr.start()
 rest()
-
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
