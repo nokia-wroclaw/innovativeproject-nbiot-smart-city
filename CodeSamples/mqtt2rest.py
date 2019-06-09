@@ -5,6 +5,14 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse
 import sensor
 from threading import Thread
+import requests
+
+def push_to_gateway(thingID, what, value):
+    urlPushGateway = "http://localhost:9091/"
+    urlSensor = urlPushGateway + "metrics/job/" + thingID
+
+    sensorValue = what + str(value) + "\n"
+    r = requests.post(urlSensor, data=sensorValue)
 
 def rest():
     app = Flask(__name__)
@@ -28,6 +36,7 @@ def mqtt_fun():
         thing_id = re.findall("\d+", str(split[1]))[0]
         value = str(msg.payload)
         sensor.update(thing_id, name, value, sensor.IDS)
+        push_to_gateway(thing_id, name, value)
                 
     client = mqtt.Client()
     client.on_connect = on_connect
