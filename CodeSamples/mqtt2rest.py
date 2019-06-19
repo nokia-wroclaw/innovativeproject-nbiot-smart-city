@@ -8,10 +8,11 @@ from threading import Thread
 import requests
 
 def push_to_gateway(thingID, what, value):
-    urlPushGateway = "http://localhost:9091/"
-    urlSensor = urlPushGateway + "metrics/job/" + thingID
 
-    sensorValue = what + str(value) + "\n"
+    urlPushGateway = "http://localhost:9091/"
+    urlSensor = urlPushGateway + "metrics/job/" + "thing-" + thingID
+    sensorValue = what + " " + str(float(value.split("'")[1])) + "\n"
+    # print(sensorValue)
     r = requests.post(urlSensor, data=sensorValue)
 
 def rest():
@@ -19,7 +20,7 @@ def rest():
     api = Api(app)
     api.add_resource(sensor.Sensor, "/sensor/<int:name>")
     api.add_resource(sensor.Ids, "/ids")
-    app.run(debug=True)
+    app.run(debug=False)
 
 def mqtt_fun():
     tokenID         = 0
